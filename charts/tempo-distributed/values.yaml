@@ -825,7 +825,7 @@ querier:
 queryFrontend:
   query:
     # -- Required for grafana version <7.5 for compatibility with jaeger-ui. Doesn't work on ARM arch
-    enabled: false
+    enabled: true
     image:
       # -- The Docker registry for the tempo-query image. Overrides `tempo.image.registry`
       registry: null
@@ -848,6 +848,28 @@ queryFrontend:
     # -- Extra volumes for tempo-query deployment
     extraVolumes: []
     config: |
+      address: 127.0.0.1:7777
+      backend: 127.0.0.1:3100
+  jaegerQuery: 
+    enabled: true 
+    image:
+      registry: null
+      pullSecrets: []
+      repository: jaegertracing/jaeger-query
+      tag: null
+    resources: {}
+    # -- Additional CLI args for tempo-query pods
+    extraArgs: []
+    # -- Environment variables to add to the tempo-query pods
+    extraEnv: []
+    # -- Environment variables from secrets or configmaps to add to the tempo-query pods
+    extraEnvFrom: []
+    # -- Extra volumes for tempo-query pods
+    extraVolumeMounts: []
+    # -- Extra volumes for tempo-query deployment
+    extraVolumes: []
+    config: |
+      address: 127.0.0.1:7777
       backend: 127.0.0.1:3100
   # -- Number of replicas for the query-frontend
   replicas: 1

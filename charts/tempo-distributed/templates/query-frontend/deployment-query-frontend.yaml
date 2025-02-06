@@ -105,20 +105,52 @@ spec:
             {{- with .Values.queryFrontend.extraVolumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
-        {{- if .Values.queryFrontend.query.enabled }}
+        {{- if .Values.queryFrontend.jaegerQuery.enabled }}
         - args:
-            - -config=/conf/tempo-query.yaml
-            {{- with .Values.queryFrontend.query.extraArgs }}
+            # - --grpc-storage.server=oceanus-tempo-query-frontend.oceanus-tempo.svc.development:7777
+            - --grpc-storage.server=127.0.0.1:7777
+            - --span-storage.type=grpc 
+            {{- with .Values.queryFrontend.jaegerQuery.extraArgs }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
-          image: {{ include "tempo.queryImage" . }}
+          image: {{ include "jaeger.queryImage" . }}
           imagePullPolicy: {{ .Values.tempo.image.pullPolicy }}
-          name: tempo-query
+          name: jaeger-query
           ports:
             - containerPort: {{ .Values.queryFrontend.service.port }}
               name: jaeger-ui
             - containerPort: 16687
               name: jaeger-metrics
+          {{- with .Values.queryFrontend.jaegerQuery.extraEnv }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.queryFrontend.jaegerQuery.extraEnvFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.queryFrontend.jaegerQuery.resources | nindent 12 }}
+          {{- with .Values.tempo.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - mountPath: /conf
+              name: config
+            {{- with .Values.queryFrontend.query.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+      {{- end }}
+        {{- if .Values.queryFrontend.query.enabled }}
+        - args:
+            - -config=/conf/tempo-query.yaml
+          image: {{ include "tempo.queryImage" . }}
+          imagePullPolicy: {{ .Values.tempo.image.pullPolicy }}
+          name: tempo-query
+          ports:
+            - containerPort: 7777
+              name: proxy-grpc
           {{- with .Values.queryFrontend.query.extraEnv }}
           env:
             {{- toYaml . | nindent 12 }}

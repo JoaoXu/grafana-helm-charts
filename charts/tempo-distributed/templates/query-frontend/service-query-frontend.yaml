@@ -34,6 +34,9 @@ spec:
     - name: tempo-query-metrics
       port: 16687
       targetPort: jaeger-metrics
+    - name: proxy-grpc
+      port: 7777
+      targetPort: proxy-grpc
     {{- end }}
   {{- if .Values.queryFrontend.service.loadBalancerIP }}
   loadBalancerIP: {{ .Values.queryFrontend.service.loadBalancerIP  }}

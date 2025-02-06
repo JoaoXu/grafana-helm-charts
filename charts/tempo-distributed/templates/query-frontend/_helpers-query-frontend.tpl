@@ -21,3 +21,11 @@ query imagePullSecrets
 {{- $dict := dict "tempo" .Values.tempo.image "component" .Values.queryFrontend.query.image "global" .Values.global.image -}}
 {{- include "tempo.imagePullSecrets" $dict -}}
 {{- end }}
+
+{{/*
+jaegerQuery image
+*/}}
+{{- define "jaeger.queryImage" -}}
+{{- $dict := dict "tempo" .Values.tempo.image "component" .Values.queryFrontend.jaegerQuery.image "global" .Values.global.image -}}
+{{- include "tempo.imagePullSecrets" $dict -}}
+{{- end }}
